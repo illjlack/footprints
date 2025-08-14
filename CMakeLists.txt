@@ -18,7 +18,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(MAIN_SOURCE_FILES
     src/main.cpp
+    src/comm/log.h
     src/comm/log.cpp
+    src/socket/socket_server.h
+    src/socket/socket_server.cpp
 )
 
 file(COPY ${CMAKE_SOURCE_DIR}/src/html DESTINATION ${CMAKE_SOURCE_DIR}/build)
