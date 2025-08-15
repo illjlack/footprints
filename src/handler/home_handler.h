@@ -1,0 +1,73 @@
+﻿/**
+* @file home_handler.h
+* @brief  首页处理
+* @author liushisheng
+* @date 2025-08-15
+*/
+
+#include <router/router.h>
+#include <fstream>
+#include <iomanip>
+#include <filesystem>
+
+// 生成文件名 YYYY-MM-DD-HHMMSS.json
+std::string generateDiaryFilename() 
+{
+    auto t = std::time(nullptr);
+    std::tm tm;
+#ifdef _WIN32
+    localtime_s(&tm, &t);
+#else
+    localtime_r(&t, &tm);
+#endif
+    std::ostringstream oss;
+    oss << std::put_time(&tm, "%Y-%m-%d-%H%M%S") << ".json";
+    return oss.str();
+}
+
+// 读取 diaries 文件夹，生成 HTML 列表
+std::string buildDiaryListHtml(const std::string& diary_dir) 
+{
+    std::ostringstream oss;
+    for (auto& p : fs::directory_iterator(diary_dir)) 
+    {
+        if (p.path().extension() == ".json") 
+        {
+            std::ifstream ifs(p.path());
+            std::string title;
+            std::getline(ifs, title); // 简单读取第一行作为标题
+            std::string filename = p.path().filename().string();
+            oss << "<li>"
+                << filename << " - " << title
+                << " <a href=\"/diary/" << filename << "\">查看</a>"
+                << " <a href=\"/delete/" << filename << "\">删除</a>"
+                << "</li>\n";
+        }
+    }
+    return oss.str();
+}
+
+
+void handlerHome(const HttpRequest& req, HttpResponse& res) 
+{
+    // 1. 读取模板
+    std::ifstream ifs("html/index.html");
+    std::stringstream ss;
+    ss << ifs.rdbuf();
+    std::string html = ss.str();
+
+    // 2. 生成日记列表
+    std::string diary_list = buildDiaryListHtml("diaries");
+
+    // 3. 替换占位符
+    size_t pos = html.find("{{DIARY_LIST}}");
+    if (pos != std::string::npos)
+        html.replace(pos, std::string("{{DIARY_LIST}}").length(), diary_list);
+
+    // 4. 填充 HttpResponse
+    res.setBody(html, "text/html");
+    res.setStatus(HttpStatus::OK);
+}
+
+// 静态对象，程序启动时自动执行构造函数注册路由
+static RouteRegister _regHome("/", "GET", handlerHome);

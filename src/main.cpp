@@ -14,19 +14,12 @@ int main()
         return -1;
     }
 
-    Router router;
-
-
-    router.get("/hello", [](const HttpRequest& req, HttpResponse& res) {
-        res.setBody("Hello, World!", "text/plain");
-        });
-
     while (true)
     {
         sock_t client = server.accept();
         if (client != INVALID_SOCKET)
         {
-            std::thread([client, &server, &router]()
+            std::thread([client, &server]()
                 {
                     std::string request;
                     char buffer[4096];
@@ -36,14 +29,25 @@ int main()
                         buffer[n] = '\0';
                         request += buffer;
 
-                        if (request.find("\r\n\r\n") != std::string::npos) // HTTP头结束
-                            break;
+                        auto headers_end = request.find("\r\n\r\n");
+                        if (headers_end != std::string::npos) 
+                        {
+                            std::string header_str = request.substr(0, headers_end);
+                            size_t content_length = HttpRequestParser::getContentLength(header_str);
+
+                            while (request.size() < headers_end + 4 + content_length) {
+                                n = server.recvData(client, buffer, sizeof(buffer) - 1);
+                                if (n <= 0) break;
+                                buffer[n] = '\0';
+                                request += buffer;
+                            }
+                        }
                     }
 
                     auto query =  HttpRequestParser::parse(buffer);
 
                     HttpResponse res;
-                    if (!router.route(query, res)) 
+                    if (!Router::getInstance().route(query, res))
                     {
                         res.setStatus(HttpStatus::NotFound);
                         res.setBody("404 Not Found");

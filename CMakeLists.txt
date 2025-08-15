@@ -28,6 +28,7 @@ set(MAIN_SOURCE_FILES
     src/http/http_response_builder.cpp
     src/router/router.h
     src/router/router.cpp
+    src/handler/home_handler.h
 )
 
 file(COPY ${CMAKE_SOURCE_DIR}/src/html DESTINATION ${CMAKE_SOURCE_DIR}/build)
