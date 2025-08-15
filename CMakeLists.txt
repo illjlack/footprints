@@ -22,6 +22,12 @@ set(MAIN_SOURCE_FILES
     src/comm/log.cpp
     src/socket/socket_server.h
     src/socket/socket_server.cpp
+    src/http/http_request_parser.h
+    src/http/http_request_parser.cpp
+    src/http/http_response_builder.h
+    src/http/http_response_builder.cpp
+    src/router/router.h
+    src/router/router.cpp
 )
 
 file(COPY ${CMAKE_SOURCE_DIR}/src/html DESTINATION ${CMAKE_SOURCE_DIR}/build)
