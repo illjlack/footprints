@@ -1,6 +1,6 @@
 ﻿#include "comm/log.h"
 #include "socket/socket_server.h"
-
+#include "http/http_request_parser.h"
 int main()
 {
     LOG_LEVEL(LogLevel::LOG_DEBUG);
@@ -29,6 +29,8 @@ int main()
                         if (request.find("\r\n\r\n") != std::string::npos) // HTTP头结束
                             break;
                     }
+
+                    auto query =  HttpRequestParser::parse(buffer);
 
                     LOG_DEBUG(request);
 
