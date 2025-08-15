@@ -3,6 +3,30 @@
 #include "http/http_request_parser.h"
 #include "http/http_response_builder.h"
 #include "router/router.h"
+#include "handler/home_handler.h"
+
+size_t getContentLengthFromHeader(const std::string& header_str) 
+{
+    size_t pos = header_str.find("Content-Length:");
+    if (pos != std::string::npos) 
+    {
+        pos += 15; // 跳过 "Content-Length:"
+        // 跳过可能的空格
+        while (pos < header_str.size() && isspace(static_cast<unsigned char>(header_str[pos]))) 
+        {
+            ++pos;
+        }
+        // 读取数字
+        size_t len = 0;
+        while (pos < header_str.size() && isdigit(static_cast<unsigned char>(header_str[pos]))) 
+        {
+            len = len * 10 + (header_str[pos] - '0');
+            ++pos;
+        }
+        return len;
+    }
+    return 0;
+}
 
 int main()
 {
@@ -33,7 +57,7 @@ int main()
                         if (headers_end != std::string::npos) 
                         {
                             std::string header_str = request.substr(0, headers_end);
-                            size_t content_length = HttpRequestParser::getContentLength(header_str);
+                            size_t content_length = getContentLengthFromHeader(header_str);
 
                             while (request.size() < headers_end + 4 + content_length) {
                                 n = server.recvData(client, buffer, sizeof(buffer) - 1);

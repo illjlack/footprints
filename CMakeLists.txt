@@ -39,6 +39,10 @@ target_compile_definitions(${PROJECT_NAME}
     PRIVATE
         LOG_FILES_PATH="${CMAKE_SOURCE_DIR}/logs/"
 )
+target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
+        DIARIES_PATH="${CMAKE_SOURCE_DIR}/diaries/"
+)
 target_include_directories(${PROJECT_NAME}
     PRIVATE
         ${CMAKE_SOURCE_DIR}/src

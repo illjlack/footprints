@@ -10,7 +10,7 @@
 #include <iomanip>
 #include <filesystem>
 
-// 生成文件名 YYYY-MM-DD-HHMMSS.json
+// 生成文件名 YYYY-MM-DD-HHMMSS.txt
 std::string generateDiaryFilename() 
 {
     auto t = std::time(nullptr);
@@ -21,7 +21,7 @@ std::string generateDiaryFilename()
     localtime_r(&t, &tm);
 #endif
     std::ostringstream oss;
-    oss << std::put_time(&tm, "%Y-%m-%d-%H%M%S") << ".json";
+    oss << std::put_time(&tm, "%Y-%m-%d-%H%M%S") << ".txt";
     return oss.str();
 }
 
@@ -29,9 +29,9 @@ std::string generateDiaryFilename()
 std::string buildDiaryListHtml(const std::string& diary_dir) 
 {
     std::ostringstream oss;
-    for (auto& p : fs::directory_iterator(diary_dir)) 
+    for (auto& p : std::filesystem::directory_iterator(diary_dir))
     {
-        if (p.path().extension() == ".json") 
+        if (p.path().extension() == ".txt") 
         {
             std::ifstream ifs(p.path());
             std::string title;
@@ -57,7 +57,11 @@ void handlerHome(const HttpRequest& req, HttpResponse& res)
     std::string html = ss.str();
 
     // 2. 生成日记列表
-    std::string diary_list = buildDiaryListHtml("diaries");
+    std::string diaries_path = "diaries";
+#ifdef DIARIES_PATH
+    diaries_path = DIARIES_PATH;
+#endif
+    std::string diary_list = buildDiaryListHtml(diaries_path);
 
     // 3. 替换占位符
     size_t pos = html.find("{{DIARY_LIST}}");

@@ -14,16 +14,6 @@
 
 using Handler = std::function<void(const HttpRequest&, HttpResponse&)>;
 
-class RouteRegister 
-{
-public:
-    RouteRegister(const std::string& path, const std::string& method,
-                  std::function<void(const HttpRequest&, HttpResponse&)> handler) 
-                  {
-        Router::getInstance().registerRoute(method, path, handler);
-    }
-};
-
 class Router
 {
 public:
@@ -50,12 +40,22 @@ public:
     }
 
 private:
-    Router();
-    ~Router();
+    Router() = default;
+    ~Router() = default;
     Router(const Router&) = delete;
     Router& operator=(const Router&) = delete;
 
     std::unordered_map<std::string, Handler> routes;
+};
+
+class RouteRegister
+{
+public:
+    RouteRegister(const std::string& path, const std::string& method,
+        std::function<void(const HttpRequest&, HttpResponse&)> handler)
+    {
+        Router::getInstance().registerRoute(method, path, handler);
+    }
 };
 
 #endif // !ROUTER_H
