@@ -1,6 +1,9 @@
 ﻿#include "comm/log.h"
 #include "socket/socket_server.h"
 #include "http/http_request_parser.h"
+#include "http/http_response_builder.h"
+#include "router/router.h"
+
 int main()
 {
     LOG_LEVEL(LogLevel::LOG_DEBUG);
@@ -11,12 +14,19 @@ int main()
         return -1;
     }
 
+    Router router;
+
+
+    router.get("/hello", [](const HttpRequest& req, HttpResponse& res) {
+        res.setBody("Hello, World!", "text/plain");
+        });
+
     while (true)
     {
         sock_t client = server.accept();
         if (client != INVALID_SOCKET)
         {
-            std::thread([client, &server]()
+            std::thread([client, &server, &router]()
                 {
                     std::string request;
                     char buffer[4096];
@@ -32,30 +42,16 @@ int main()
 
                     auto query =  HttpRequestParser::parse(buffer);
 
-                    LOG_DEBUG(request);
-
-                    if (n > 0)
+                    HttpResponse res;
+                    if (!router.route(query, res)) 
                     {
-                        std::cout << "Received request:\n" << buffer << "\n";
-
-                        // 构造 HTTP 响应
-                        std::string html = R"(<!DOCTYPE html>
-                            <html>
-                            <head><title>Test Page</title></head>
-                            <body>
-                            <h1>Hello from SocketServer!</h1>
-                            <p>This is a simple HTML page.</p>
-                            </body>
-                            </html>)";
-
-                        std::string response =
-                            (std::string)"HTTP/1.1 200 OK\r\n"
-                            "Content-Type: text/html; charset=UTF-8\r\n" +
-                            "Content-Length:" + std::to_string(html.size()) + "\r\n\r\n" +
-                            html;
-
-                        server.sendAll(client, response.c_str(), response.size());
+                        res.setStatus(HttpStatus::NotFound);
+                        res.setBody("404 Not Found");
                     }
+
+                    std::string responseStr = HttpResponseBuilder::build(res);
+
+                    server.sendAll(client, responseStr.c_str(), responseStr.size());
                 }).detach();
         }
     }

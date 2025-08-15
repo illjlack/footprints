@@ -21,9 +21,9 @@ std::string HttpRequestParser::trim(const std::string& s)
 	return s.substr(start, end - start + 1);
 }
 
-std::map<std::string, std::string> HttpRequestParser::parseQueryString(const std::string& query)
+std::unordered_map<std::string, std::string> HttpRequestParser::parseQueryString(const std::string& query)
 {
-	std::map<std::string, std::string> params;
+	std::unordered_map<std::string, std::string> params;
 	std::istringstream iss(query);
 
 	std::string item;
@@ -42,9 +42,9 @@ std::map<std::string, std::string> HttpRequestParser::parseQueryString(const std
 	return params;
 }
 
-std::map<std::string, std::string> HttpRequestParser::parseCookies(const std::string& cookie_header)
+std::unordered_map<std::string, std::string> HttpRequestParser::parseCookies(const std::string& cookie_header)
 {
-	std::map<std::string, std::string> cookies;
+	std::unordered_map<std::string, std::string> cookies;
 	std::istringstream iss(cookie_header);
 
 	std::string item;
@@ -71,7 +71,7 @@ HttpRequest HttpRequestParser::parse(const std::string& rawRequest)
 		return req;
 	}
 	line = trim(line);
-	std::istringstream line_iss;
+	std::istringstream line_iss(line);
 	line_iss >> req.method >> req.path >> req.version;
 
 	size_t qpos = req.path.find('?');

@@ -9,7 +9,7 @@
 #define HTTP_REQUEST_PARSER_H
 
 #include <string>
-#include <map>
+#include <unordered_map>
 #include <sstream>
 #include <algorithm>
 
@@ -18,10 +18,10 @@ struct HttpRequest
 	std::string method;
 	std::string path;
 	std::string version;
-	std::map<std::string, std::string> headers;
+	std::unordered_map<std::string, std::string> headers;
 	std::string body;
-	std::map<std::string, std::string> query_params;
-	std::map<std::string, std::string> cookies;
+	std::unordered_map<std::string, std::string> query_params;
+	std::unordered_map<std::string, std::string> cookies;
 };
 
 class HttpRequestParser
@@ -36,9 +36,9 @@ private:
 
 	static std::string trim(const std::string& s);
 	
-	static std::map<std::string, std::string> parseQueryString(const std::string& query);
+	static std::unordered_map<std::string, std::string> parseQueryString(const std::string& query);
 
-	static std::map<std::string, std::string> parseCookies(const std::string& cookie_header);
+	static std::unordered_map<std::string, std::string> parseCookies(const std::string& cookie_header);
 };
 
 #endif // !HTTP_REQUEST_PARSER_H
