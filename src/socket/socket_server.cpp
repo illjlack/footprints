@@ -10,14 +10,6 @@
 #include <format>
 #include <cstring>
 
-#ifdef _WIN32
-
-#else
-#include <unistd.h>
-
-#include <errno.h>
-#endif
-
 // 获取最后的错误信息
 static std::string getLastErrorMsg()
 {
