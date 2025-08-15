@@ -14,22 +14,33 @@
 
 using Handler = std::function<void(const HttpRequest&, HttpResponse&)>;
 
+class RouteRegister 
+{
+public:
+    RouteRegister(const std::string& path, const std::string& method,
+                  std::function<void(const HttpRequest&, HttpResponse&)> handler) 
+    {
+        Router::getInstance().registerRoute(method, path, handler);
+    }
+};
+
 class Router
 {
 public:
-    inline void get(const std::string& path, Handler handler)
+    inline static Router& getInstance()
     {
-        routes["GET:" + path] = handler;
+        static Router router;
+        return router;
     }
 
-    inline void post(const std::string& path, Handler handler)
+    inline void registerRoute(const std::string& method, const std::string& path, Handler handler)
     {
-        routes["POST:" + path] = handler;
+        routes[method + ':' + path] = handler; 
     }
 
     inline bool route(const HttpRequest& req, HttpResponse& res) const
     {
-        auto it = routes.find(req.method + ":" + req.path);
+        auto it = routes.find(req.method + ':' + req.path);
         if (it != routes.end())
         {
             it->second(req, res);
@@ -39,6 +50,11 @@ public:
     }
 
 private:
+    Router();
+    ~Router();
+    Router(const Router&) = delete;
+    Router& operator=(const Router&) = delete;
+
     std::unordered_map<std::string, Handler> routes;
 };
 
