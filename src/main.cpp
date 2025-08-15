@@ -5,7 +5,7 @@ int main()
 {
     LOG_LEVEL(LogLevel::LOG_DEBUG);
 
-    SocketServer server(18080); // 监听端口
+    SocketServer server(8080); // 监听端口
     if (!server.start())
     {
         return -1;

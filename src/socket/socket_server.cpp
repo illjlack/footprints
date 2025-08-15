@@ -8,6 +8,7 @@
 #include "socket_server.h"
 #include "comm/log.h"
 #include <format>
+#include <cstring>
 
 #ifdef _WIN32
 
@@ -29,8 +30,10 @@ static std::string getLastErrorMsg()
 
 SocketServer::SocketServer(int port) 
     : m_port(port),
-    m_listen_fd(INVALID_SOCKET),
-    m_wsa_started(false)
+    m_listen_fd(INVALID_SOCKET)
+#ifdef _WIN32
+    , m_wsa_started(false)
+#endif
 {
 }
 
@@ -156,7 +159,6 @@ int SocketServer::sendData(sock_t sock, const char* buffer, int len)
     }
     return ret;
 }
-
 
 int SocketServer::sendAll(sock_t sock, const char* buffer, int len)
 {
