@@ -32,15 +32,22 @@ public:
     SocketServer(int port);
     ~SocketServer();
 
+    bool init();
     bool start();
     void stop();
 
-	sock_t createSocket();
+	
     sock_t accept();
-    void close(sock_t sock);
-
+    
     int recvData(sock_t sock, char* buffer, int len);
     int sendData(sock_t sock, const char* buffer, int len);
+
+    int recvAll(sock_t sock, char* buffer, int len);
+    int sendAll(sock_t sock, const char* buffer, int len);
+
+private:
+    sock_t createSocket();
+    void closeSocket(sock_t& sock);
 
 private:
     int m_port;
@@ -50,5 +57,4 @@ private:
     bool m_wsa_started;
 #endif
 };
-
 #endif // SOCKET_SERVER_H
