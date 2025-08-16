@@ -9,10 +9,12 @@
 #include <fstream>
 #include <iomanip>
 #include <filesystem>
+#include <format>
 
 // 生成文件名 YYYY-MM-DD-HHMMSS.txt
 std::string generateDiaryFilename() 
 {
+    LOG_DEBUG("Generating new diary filename");
     auto t = std::time(nullptr);
     std::tm tm;
 #ifdef _WIN32
@@ -28,6 +30,7 @@ std::string generateDiaryFilename()
 // 读取 diaries 文件夹，生成 HTML 列表
 std::string buildDiaryListHtml(const std::string& diary_dir) 
 {
+    LOG_DEBUG(std::format("Building diary list from directory: {}", diary_dir));
     std::ostringstream oss;
     for (auto& p : std::filesystem::directory_iterator(diary_dir))
     {
@@ -50,6 +53,7 @@ std::string buildDiaryListHtml(const std::string& diary_dir)
 
 void handlerHome(const HttpRequest& req, HttpResponse& res) 
 {
+    LOG_INFO("Handling home page request");
     // 1. 读取模板
     std::ifstream ifs("html/index.html");
     std::stringstream ss;
@@ -71,6 +75,7 @@ void handlerHome(const HttpRequest& req, HttpResponse& res)
     // 4. 填充 HttpResponse
     res.setBody(html, "text/html");
     res.setStatus(HttpStatus::OK);
+    LOG_DEBUG("Home page response prepared successfully");
 }
 
 // 静态对象，程序启动时自动执行构造函数注册路由

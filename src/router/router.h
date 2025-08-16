@@ -11,6 +11,7 @@
 #include "http/http_request_parser.h"
 #include "http/http_response_builder.h"
 #include <functional>
+#include <format>
 
 using Handler = std::function<void(const HttpRequest&, HttpResponse&)>;
 
@@ -25,6 +26,7 @@ public:
 
     inline void registerRoute(const std::string& method, const std::string& path, Handler handler)
     {
+        LOG_INFO(std::format("Registering route: {} {}", method, path));
         routes[method + ':' + path] = handler; 
     }
 
@@ -33,9 +35,11 @@ public:
         auto it = routes.find(req.method + ':' + req.path);
         if (it != routes.end())
         {
+            LOG_DEBUG(std::format("Route matched: {} {}", req.method, req.path));
             it->second(req, res);
             return true;
         }
+        LOG_WARN(std::format("No route found for: {} {}", req.method, req.path));
         return false;
     }
 

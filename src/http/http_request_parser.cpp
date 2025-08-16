@@ -7,6 +7,7 @@
 
 #include "http_request_parser.h"
 #include "comm/log.h"
+#include <format>
 
 std::string HttpRequestParser::trim(const std::string& s)
 {
@@ -68,11 +69,13 @@ HttpRequest HttpRequestParser::parse(const std::string& rawRequest)
 	std::string line;
 	if (!std::getline(iss, line))
 	{
+		LOG_WARN("Failed to read request line");
 		return req;
 	}
 	line = trim(line);
 	std::istringstream line_iss(line);
 	line_iss >> req.method >> req.path >> req.version;
+	LOG_DEBUG(std::format("Parsing HTTP request: {} {} {}", req.method, req.path, req.version));
 
 	size_t qpos = req.path.find('?');
 	if (qpos != std::string::npos)
