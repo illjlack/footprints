@@ -18,6 +18,8 @@ enum class HttpStatus
 	Created				= 201,
 	NoContent			= 204,
 
+	Found				= 302,
+
 	BadRequest			= 400,
 	Unauthorized		= 401,
 	Forbidden			= 403,

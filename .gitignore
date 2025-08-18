@@ -2,7 +2,7 @@
 build/
 
 # 忽略日记数据
-diary/
+diaries/
 
 # 忽略日志
 logs/

@@ -1,0 +1,24 @@
+<!-- write.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>写日记</title>
+    <link rel="stylesheet" href="assets/common.css">
+</head>
+
+<body>
+    <h1>写日记</h1>
+    <form action="/post_write" method="POST">
+        <label>标题：</label><br>
+        <input type="text" name = "title" required><br><br>
+
+        <label>内容：</label><br>
+        <textarea name="content" rows="10" cols="50" required></textarea>
+
+        <button type="submit">提交</button>
+    </form>
+    <a href="/">返回首页</a>
+</body>
+
+</html>

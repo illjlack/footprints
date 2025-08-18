@@ -28,15 +28,20 @@ set(MAIN_SOURCE_FILES
     src/http/http_response_builder.cpp
     src/router/router.h
     src/router/router.cpp
+    src/handler/assets_handler.h
 )
 
-file(COPY ${CMAKE_SOURCE_DIR}/src/html DESTINATION ${CMAKE_SOURCE_DIR}/build)
+file(COPY ${CMAKE_SOURCE_DIR}/src/assets DESTINATION ${CMAKE_SOURCE_DIR}/build)
 
 add_executable(${PROJECT_NAME} ${MAIN_SOURCE_FILES})
 
 target_compile_definitions(${PROJECT_NAME}
     PRIVATE
         LOG_FILES_PATH="${CMAKE_SOURCE_DIR}/logs/"
+)
+target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
+        DIARIES_PATH="${CMAKE_SOURCE_DIR}/diaries/"
 )
 target_include_directories(${PROJECT_NAME}
     PRIVATE
