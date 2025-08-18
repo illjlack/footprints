@@ -33,14 +33,33 @@ public:
 
     inline bool route(const HttpRequest& req, HttpResponse& res) const
     {
-        auto it = routes.find(req.method + ':' + (req.path.find("/assets/") == std::string::npos ? req.path : "/assets"));
-        if (it != routes.end())
+        std::string key = req.method + ':';
+        std::string path = req.path;
+
+        for (std::string current = path; !current.empty();)
         {
-            LOG_DEBUG(std::format("Route matched: {} {}", req.method, req.path));
+            auto it = routes.find(key + current);
+            if(it != routes.end())
+            {
+                it->second(req, res);
+                return true;
+            }
+
+            auto pos = current.find_last_of('/');
+            if(pos == std::string::npos || pos == 0)
+            {
+                break;
+            }
+            current = current.substr(0, pos);
+        }
+
+        auto it = routes.find(key + '/');
+        if(it != routes.end())
+        {
             it->second(req, res);
             return true;
         }
-        LOG_WARN(std::format("No route found for: {} {}", req.method, req.path));
+
         return false;
     }
 
