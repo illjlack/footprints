@@ -3,7 +3,7 @@
 #include "http/http_request_parser.h"
 #include "http/http_response_builder.h"
 #include "router/router.h"
-#include "handler/home_handler.h"
+#include "handler/diaries_handler.h"
 #include "handler/assets_handler.h"
 
 size_t getContentLengthFromHeader(const std::string& header_str) 

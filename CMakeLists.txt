@@ -28,6 +28,7 @@ set(MAIN_SOURCE_FILES
     src/http/http_response_builder.cpp
     src/router/router.h
     src/router/router.cpp
+    src/handler/diaries_handler.h
     src/handler/assets_handler.h
 )
 
