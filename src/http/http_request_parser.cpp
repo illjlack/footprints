@@ -7,6 +7,34 @@
 
 #include "http_request_parser.h"
 #include "comm/log.h"
+#include <format>
+#include <algorithm>
+#include <iostream>
+
+std::string urlDecode(const std::string& value)
+{
+    std::string decoded;
+    for (size_t i = 0; i < value.length(); ++i)
+    {
+        if (value[i] == '+')
+        {
+            decoded += ' ';
+        }
+        else if (value[i] == '%' && i + 2 < value.length())
+        {
+            int hex = 0;
+            std::istringstream(value.substr(i + 1, 2)) >> std::hex >> hex;
+            decoded += static_cast<char>(hex);
+            i += 2;
+        }
+        else
+        {
+            decoded += value[i];
+        }
+    }
+
+    return decoded;
+}
 
 std::string HttpRequestParser::trim(const std::string& s)
 {
@@ -68,11 +96,14 @@ HttpRequest HttpRequestParser::parse(const std::string& rawRequest)
 	std::string line;
 	if (!std::getline(iss, line))
 	{
+		LOG_WARN("Failed to read request line");
 		return req;
 	}
 	line = trim(line);
 	std::istringstream line_iss(line);
 	line_iss >> req.method >> req.path >> req.version;
+	req.path = urlDecode(req.path);
+	LOG_DEBUG(std::format("Parsing HTTP request: {} {} {}", req.method, req.path, req.version));
 
 	size_t qpos = req.path.find('?');
 	if (qpos != std::string::npos)
