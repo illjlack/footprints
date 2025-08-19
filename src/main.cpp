@@ -5,6 +5,7 @@
 #include "router/router.h"
 #include "handler/diaries_handler.h"
 #include "handler/assets_handler.h"
+#include "handler/cube_handler.h"
 
 size_t getContentLengthFromHeader(const std::string& header_str) 
 {
